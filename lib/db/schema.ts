@@ -13,12 +13,7 @@ import { relations } from "drizzle-orm";
 import type { AdapterAccountType } from "next-auth/adapters";
 
 // Enums
-export const planEnum = pgEnum("plan", [
-  "free",
-  "starter",
-  "growth",
-  "business",
-]);
+export const planEnum = pgEnum("plan", ["starter", "growth", "business"]);
 
 export const orgRoleEnum = pgEnum("org_role", ["admin", "member", "viewer"]);
 
@@ -121,8 +116,10 @@ export const organizations = pgTable("organizations", {
   ownerId: uuid("owner_id")
     .notNull()
     .references(() => users.id),
-  plan: planEnum("plan").default("free").notNull(),
+  plan: planEnum("plan"),
   stripeCustomerId: text("stripe_customer_id"),
+  previewStartedAt: timestamp("preview_started_at"),
+  previewEndsAt: timestamp("preview_ends_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

@@ -15,6 +15,13 @@
       "when": 1774838674629,
       "tag": "0001_loose_gideon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774898928223,
+      "tag": "0002_lame_johnny_blaze",
+      "breakpoints": true
     }
   ]
 }

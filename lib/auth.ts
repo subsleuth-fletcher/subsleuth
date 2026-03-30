@@ -74,12 +74,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
           ? `${user.name}'s Organization`
           : `${user.email.split("@")[0]}'s Organization`;
 
+        // New organizations start in 7-day preview mode
+        const now = new Date();
+        const previewEndsAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
         const [newOrg] = await db
           .insert(organizations)
           .values({
             name: orgName,
             ownerId: user.id,
-            plan: "free",
+            previewStartedAt: now,
+            previewEndsAt: previewEndsAt,
           })
           .returning();
 
