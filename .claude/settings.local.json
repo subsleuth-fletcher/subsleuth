@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"\" \"C:\\\\Users\\\\fletc\\\\OneDrive\\\\Documents\\\\subsleuth\\\\subsleuth\\\\index.html\")",
+      "Bash(netlify deploy:*)",
+      "Bash(npx netlify-cli:*)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(set \"DATABASE_URL=postgresql://user:pass@localhost:5432/db\")",
+      "Bash(npm run db:generate:*)",
+      "Bash(if exist .next rmdir /s /q .next)"
+    ]
+  }
+}
