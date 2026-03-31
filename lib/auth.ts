@@ -51,6 +51,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
 
         if (userOrg) {
           session.user.organizationId = userOrg.id;
+          session.user.organizationPlan = userOrg.plan;
+          session.user.previewEndsAt = userOrg.previewEndsAt?.toISOString() ?? null;
         } else {
           // Check if user is a member of any org
           const membership = await db.query.orgMembers.findFirst({
@@ -59,6 +61,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
           });
           if (membership) {
             session.user.organizationId = membership.orgId;
+            session.user.organizationPlan = membership.organization.plan;
+            session.user.previewEndsAt = membership.organization.previewEndsAt?.toISOString() ?? null;
           }
         }
 
@@ -108,6 +112,8 @@ declare module "next-auth" {
       name?: string | null;
       image?: string | null;
       organizationId?: string;
+      organizationPlan?: "starter" | "growth" | "business" | null;
+      previewEndsAt?: string | null;
     };
   }
 }

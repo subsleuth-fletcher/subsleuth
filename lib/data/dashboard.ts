@@ -1,5 +1,5 @@
 import { getDb, subscriptions } from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 
 export type DashboardStats = {
   totalSpend: number;
@@ -81,4 +81,68 @@ export async function getSubscriptions(
     status: s.status,
     detectedSource: s.detectedSource,
   }));
+}
+
+/**
+ * Get subscriptions with total count (for preview mode limiting)
+ */
+export async function getSubscriptionsWithCount(
+  orgId: string,
+  limit?: number | null
+): Promise<{
+  subscriptions: SubscriptionWithSource[];
+  totalCount: number;
+}> {
+  const db = getDb();
+
+  // Get total count
+  const countResult = await db
+    .select({ count: count() })
+    .from(subscriptions)
+    .where(eq(subscriptions.orgId, orgId));
+  const totalCount = countResult[0]?.count ?? 0;
+
+  // Get limited results
+  const results = await db.query.subscriptions.findMany({
+    where: eq(subscriptions.orgId, orgId),
+    orderBy: (subscriptions, { desc }) => [desc(subscriptions.updatedAt)],
+    limit: limit ?? undefined,
+  });
+
+  return {
+    subscriptions: results.map((s) => ({
+      id: s.id,
+      vendorName: s.vendorName,
+      category: s.category,
+      monthlyCost: parseFloat(s.monthlyCost),
+      renewalDate: s.renewalDate,
+      status: s.status,
+      detectedSource: s.detectedSource,
+    })),
+    totalCount,
+  };
+}
+
+/**
+ * Get category counts for subscriptions
+ */
+export async function getCategoryCounts(
+  orgId: string
+): Promise<Record<string, number>> {
+  const db = getDb();
+
+  const results = await db.query.subscriptions.findMany({
+    where: eq(subscriptions.orgId, orgId),
+    columns: {
+      category: true,
+    },
+  });
+
+  const counts: Record<string, number> = {};
+  for (const s of results) {
+    const category = s.category || "Uncategorized";
+    counts[category] = (counts[category] || 0) + 1;
+  }
+
+  return counts;
 }
