@@ -42,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
       ...authConfig.callbacks,
       async session({ session, token }) {
         // Add user id to session
-        session.user.id = token.sub;
+        session.user.id = token.sub!;
 
         // Find user's organization (either owned or member)
         const userOrg = await db.query.organizations.findFirst({
