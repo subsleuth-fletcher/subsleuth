@@ -36,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
       verificationTokensTable: verificationTokens,
     }),
     session: {
-      strategy: "database",
+      strategy: "jwt",
     },
     callbacks: {
       ...authConfig.callbacks,
