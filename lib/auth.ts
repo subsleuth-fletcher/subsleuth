@@ -40,9 +40,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
     },
     callbacks: {
       ...authConfig.callbacks,
-      async session({ session, user }) {
+      async session({ session, token }) {
         // Add user id to session
-        session.user.id = user.id;
+        session.user.id = token.sub;
 
         // Find user's organization (either owned or member)
         const userOrg = await db.query.organizations.findFirst({
