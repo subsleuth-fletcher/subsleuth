@@ -42,11 +42,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
       ...authConfig.callbacks,
       async session({ session, token }) {
         // Add user id to session
+        if (!token.sub) return session;
         session.user.id = token.sub;
 
         // Find user's organization (either owned or member)
         const userOrg = await db.query.organizations.findFirst({
-          where: eq(organizations.ownerId, user.id),
+          where: eq(organizations.ownerId, token.sub),
         });
 
         if (userOrg) {
@@ -56,7 +57,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth(() => {
         } else {
           // Check if user is a member of any org
           const membership = await db.query.orgMembers.findFirst({
-            where: eq(orgMembers.userId, user.id),
+            where: eq(orgMembers.userId, token.sub),
             with: { organization: true },
           });
           if (membership) {
